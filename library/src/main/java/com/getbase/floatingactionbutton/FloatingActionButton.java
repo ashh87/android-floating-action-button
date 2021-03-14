@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.Shader.TileMode;
@@ -45,6 +46,7 @@ public class FloatingActionButton extends ImageButton {
   int mColorNormal;
   int mColorPressed;
   int mColorDisabled;
+  int mIconColor;
   String mTitle;
   @DrawableRes
   private int mIcon;
@@ -76,6 +78,7 @@ public class FloatingActionButton extends ImageButton {
     mColorNormal = attr.getColor(R.styleable.FloatingActionButton_fab_colorNormal, getColor(android.R.color.holo_blue_dark));
     mColorPressed = attr.getColor(R.styleable.FloatingActionButton_fab_colorPressed, getColor(android.R.color.holo_blue_light));
     mColorDisabled = attr.getColor(R.styleable.FloatingActionButton_fab_colorDisabled, getColor(android.R.color.darker_gray));
+    mIconColor = attr.getColor(R.styleable.FloatingActionButton_fab_iconColor, getColor(android.R.color.black));
     mSize = attr.getInt(R.styleable.FloatingActionButton_fab_size, SIZE_NORMAL);
     mIcon = attr.getResourceId(R.styleable.FloatingActionButton_fab_icon, 0);
     mTitle = attr.getString(R.styleable.FloatingActionButton_fab_title);
@@ -186,6 +189,24 @@ public class FloatingActionButton extends ImageButton {
     }
   }
 
+  /**
+   * @return the current color for icon.
+   */
+  public int getIconColor() {
+    return mIconColor;
+  }
+
+  public void setIconColorResId(@ColorRes int iconColor) {
+    setIconColor(getColor(iconColor));
+  }
+
+  public void setIconColor(int color) {
+    if (mIconColor != color) {
+      mIconColor = color;
+      updateBackground();
+    }
+  }
+
   public void setStrokeVisible(boolean visible) {
     if (mStrokeVisible != visible) {
       mStrokeVisible = visible;
@@ -270,7 +291,9 @@ public class FloatingActionButton extends ImageButton {
     if (mIconDrawable != null) {
       return mIconDrawable;
     } else if (mIcon != 0) {
-      return getResources().getDrawable(mIcon);
+      Drawable drawable = getResources().getDrawable(mIcon);
+      drawable.setColorFilter(mIconColor, PorterDuff.Mode.SRC_IN);
+      return drawable;
     } else {
       return new ColorDrawable(Color.TRANSPARENT);
     }
